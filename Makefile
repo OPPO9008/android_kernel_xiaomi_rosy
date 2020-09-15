@@ -391,7 +391,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -std=gnu89
 
 # Device CPU specific optimization flags
-KBUILD_CFLAGS += -march=armv8-a -mtune=cortex-a53
+KBUILD_CFLAGS += -march=armv8-a -mtune=cortex-a53 -mcpu=cortex-a53
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
@@ -623,6 +623,18 @@ KBUILD_CFLAGS += $(call cc-option, -mno-global-merge,)
 KBUILD_CFLAGS += $(call cc-option, -fcatch-undefined-behavior)
 KBUILD_CFLAGS += $(call cc-option, -no-integrated-as)
 KBUILD_AFLAGS += $(call cc-option, -no-integrated-as)
+#尝试优化
+KBUILD_LDFLAGS += -m $(SRCARCH)
+KBUILD_AFLAGS += -mtune=cortex-a53 -mcpu=cortex-a53
+KBUILD_CFLAGS += $(call cc-option, -mllvm -polly) \
+		   $(call cc-option, -mllvm -polly-run-dce) \
+		   $(call cc-option, -mllvm -polly-run-inliner) \
+		   $(call cc-option, -mllvm -polly-opt-fusion=max) \
+		   $(call cc-option, -mllvm -polly-ast-use-context) \
+		   $(call cc-option, -mllvm -polly-detect-keep-going) \
+		   $(call cc-option, -mllvm -polly-vectorizer=stripmine) \
+		   $(call cc-option, -mllvm -polly-invariant-load-hoisting)
+
 else
 
 # These warnings generated too much noise in a regular build.
